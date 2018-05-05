@@ -69,6 +69,16 @@ class Returns(Resource):
         resp = requests.get(url=alpha_url, params=params)
         data = resp.json()['Time Series (Daily)']
 
+        prev = 0
+        for key, value in data.items():
+            if prev == 0:
+                value['6. difference'] = '0'
+            else:
+                value['6. difference'] = float(value['4. close']) - float(prev)
+
+            prev = value['4. close']
+            print(key, value)
+
         return data
 
 
