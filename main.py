@@ -1,10 +1,12 @@
 #!/usr/bin/python3.6
-from flask import Flask, request
+from flask import Flask, request, send_from_directory, render_template
 from flask_cors import CORS
 from flask_restful import Resource, Api
 import pythonRestfulNews as prn
 import requests
 import json
+import dominate
+from dominate.tags import *
 
 alpha_api_key = '8ZENAOK5JN09QWB1'
 alpha_url = 'https://www.alphavantage.co/query'
@@ -70,8 +72,20 @@ class Returns(Resource):
         return data
 
 
+
+@app.route('/website')
+def trial():
+    if 'title' in request.args:
+        title = request.args['title']
+    else:
+        title = 'Awesome Website'
+
+    return render_template('basic.html', title=title)
+
 api.add_resource(News, '/news')
 api.add_resource(Returns, '/returns')
+#the other route is the app.route website which uses jinja 2 to render basic html with other stuff
+
 
 
 if __name__ == '__main__':
