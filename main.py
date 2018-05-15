@@ -6,7 +6,10 @@ import pythonRestfulNews as prn
 import requests
 import json
 import dominate
+import got3 as got
+from datetime import date, datetime, timedelta
 from dominate.tags import *
+import re
 
 alpha_api_key = '8ZENAOK5JN09QWB1'
 alpha_url = 'https://www.alphavantage.co/query'
@@ -15,6 +18,12 @@ app = Flask(__name__)
 
 CORS(app)
 api = Api(app)
+
+def daterange(start_date, end_date):
+    for n in range(int ((end_date - start_date).days)):
+        yield start_date + timedelta(n)
+
+
 
 class News(Resource):
     def get(self):
@@ -77,11 +86,68 @@ class Returns(Resource):
                 value['6. difference'] = float(value['4. close']) - float(prev)
 
             prev = value['4. close']
-            print(key, value)
+            #print(key, value)
 
         return data
 
+class Twitter(Resource):
+    def get(self):
+        if 'topics' in request.args:
+            topics = request.args['topics']
+        else:
+            return "must have topics"
 
+        if 'company' in request.args:
+            company = request.args['company']
+        else:
+            return "must have company names"
+        
+        if 'start_date' in request.args:
+            start_date = datetime.strptime(request.args['start_date'], "%Y-%m-%d").date()
+             
+        else:
+            return "must have start date"
+
+        if 'end_date' in request.args:
+            end_date = datetime.strptime(request.args['end_date'], "%Y-%m-%d").date()
+        else:
+            return "must have end date"
+
+        data = []
+
+        for single_date in daterange(start_date, end_date):
+            record = dict()
+            start = single_date.strftime("%Y-%m-%d")
+            end = (single_date + timedelta(days=1)).strftime("%Y-%m-%d")
+            tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
+            numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
+            record['day'] = start
+            record['tweet count'] = numtweets
+            data.append(record)
+
+        final = dict()
+        final['data'] = data
+
+        return final
+
+class Facebook(Resource):
+    def get(self):
+        url = 'http://188.166.238.3/api/v1/fbstats'
+        params = {"startdate": "2018-1-1T0:0:0",
+                "enddate": "2018-5-1T0:0:0",
+                "instid": "wow",
+                "stats": "post_message, post_created_time, post_like_count"
+            }
+        resp = requests.get(url=url, params=params)
+        json = resp.json()
+        final = []
+
+        for post in resp.json()['Facebook Statistic Data']['posts']:
+            print(post['post_created_time'])
+            if re.search('plastic', (post['post_message'])):
+                final.append(post)
+
+        return final
 
 @app.route('/website')
 def trial():
@@ -94,6 +160,8 @@ def trial():
 
 api.add_resource(News, '/news')
 api.add_resource(Returns, '/returns')
+api.add_resource(Twitter, '/twitter')
+api.add_resource(Facebook, '/facebook')
 #the other route is the app.route website which uses jinja 2 to render basic html with other stuff
 
 
