@@ -155,7 +155,7 @@ def website():
     #customize the website
     name = request.args['name']
     data = request.get_json(force=True)
-    path = generate_website(name, data)
+    generate_website(name, data)
 
     return "made website"
 

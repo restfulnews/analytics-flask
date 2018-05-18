@@ -1,6 +1,7 @@
 import os
 from shutil import copytree, make_archive, rmtree
 import jinja2
+import re
 
 def generate_website(name, data):
 
@@ -39,39 +40,18 @@ def customize_website(filepath, name, data):
 
     #also want to write the result in templates
     templateFilepath = os.getcwd() + '/templates/' + name + '.html'
+    
+    #also need to change the result to use the appropriate things
+    result = result.replace("vendor/bootstrap/css/bootstrap.min.css", "{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}")
+    result = result.replace("vendor/font-awesome/css/font-awesome.min.css", "{{ url_for('static', filename='vendor/font-awesome/css/font-awesome.min.css') }}")
+    result = result.replace("vendor/devicons/css/devicons.min.css", "{{ url_for('static', filename='vendor/devicons/css/devicons.min.css') }}")
+    result = result.replace("vendor/simple-line-icons/css/simple-line-icons.css", "{{ url_for('static', filename='vendor/simple-line-icons/css/simple-line-icons.css') }}")
+    result = result.replace("css/resume.min.css", "{{ url_for('static', filename='css/resume.min.css') }}")
+
+    result = result.replace("vendor/jquery/jquery.min.js", "{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}")
+    result = result.replace("vendor/bootstrap/js/bootstrap.bundle.min.js", "{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}")
+    result = result.replace("vendor/jquery-easing/jquery.easing.min.js", "{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}")
+    result = result.replace("js/resume.min.js", "{{ url_for('static', filename='js/resume.min.js') }}")
 
     with open(templateFilepath, 'w') as f:
         f.write(result)
-
-
-'''
-news = []
-graphs = []
-models = []
-newsInfo = {
-    'title': 'Trump',
-    'tags' : 'tags go here',
-    'snippet' : 'snippet here',
-    'date' : 'date here'
-}
-news.append(newsInfo)
-
-context = {
-'title': 'Trump and aircraft',
-'description': 'DESCRIPTION GOES HERE WOOHOOO',
-'news' : news,
-'email' : 'dummy@email.com',
-'pn' : '04imahooker'
-}
-if news is not []:
-    context['news'] = news
-
-if graphs is not []:
-    context['graphs'] = graphs
-
-if models is not []:
-    context['models'] = models
-'''
-
-    
-    
