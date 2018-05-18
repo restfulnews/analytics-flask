@@ -1,5 +1,5 @@
 #!/usr/bin/python3.6
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, request, send_from_directory, render_template, send_file
 from flask_cors import CORS
 from flask_restful import Resource, Api
 import pythonRestfulNews as prn
@@ -157,6 +157,10 @@ def trial():
         title = 'Awesome Website'
 
     return render_template('basic.html', title=title)
+
+@app.route('/website2')
+def website2():
+    return send_file('website.zip')
 
 api.add_resource(News, '/news')
 api.add_resource(Returns, '/returns')
