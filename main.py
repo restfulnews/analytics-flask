@@ -5,11 +5,12 @@ from flask_restful import Resource, Api
 import pythonRestfulNews as prn
 import requests
 import json
-import dominate
 import got3 as got
 from datetime import date, datetime, timedelta
-from dominate.tags import *
 import re
+import os
+from generate import generate_website
+
 
 alpha_api_key = '8ZENAOK5JN09QWB1'
 alpha_url = 'https://www.alphavantage.co/query'
@@ -149,26 +150,35 @@ class Facebook(Resource):
 
         return final
 
-@app.route('/website')
-def trial():
-    if 'title' in request.args:
-        title = request.args['title']
-    else:
-        title = 'Awesome Website'
+@app.route('/website', methods=["POST"])
+def website():
+    #customize the website
+    name = request.args['name']
+    data = request.get_json(force=True)
+    path = generate_website(name, data)
 
-    return render_template('basic.html', title=title)
+    return "made website"
 
-@app.route('/website2')
-def website2():
-    return send_file('website.zip')
+@app.route('/websitedownload')
+def websitedownload():
+    name = request.args['name']
+    path = os.getcwd() + "/" + name + '.zip'
 
+    #check this path actually exists
+
+    return send_file(path)
+
+@app.route('/websiteview')
+def websiteview():
+    name = request.args['name']
+    return render_template(name +'.html')
+
+
+#need to add all of our api resources here (note the website one is a flask route as it needs the send_file function):
 api.add_resource(News, '/news')
 api.add_resource(Returns, '/returns')
 api.add_resource(Twitter, '/twitter')
 api.add_resource(Facebook, '/facebook')
-#the other route is the app.route website which uses jinja 2 to render basic html with other stuff
-
-
 
 if __name__ == '__main__':
     app.run(debug=True)
