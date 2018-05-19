@@ -9,8 +9,7 @@ import got3 as got
 from datetime import date, datetime, timedelta
 import re
 import os
-from generate import generate_website
-
+from generate import generate_website, generate_model
 
 alpha_api_key = '8ZENAOK5JN09QWB1'
 alpha_url = 'https://www.alphavantage.co/query'
@@ -80,7 +79,10 @@ class Returns(Resource):
         data = resp.json()['Time Series (Daily)']
 
         prev = 0
+        finalList =  []
         for key, value in data.items():
+            final = dict()
+            final['date'] = key
             if prev == 0:
                 value['6. difference'] = '0'
             else:
@@ -88,8 +90,12 @@ class Returns(Resource):
 
             prev = value['4. close']
             #print(key, value)
+            final['difference'] = value['6. difference']
+            final['price'] = value['4. close']
+            finalList.append(final)
 
-        return data
+
+        return finalList
 
 class Twitter(Resource):
     def get(self):
@@ -122,7 +128,7 @@ class Twitter(Resource):
             end = (single_date + timedelta(days=1)).strftime("%Y-%m-%d")
             tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
             numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
-            record['day'] = start
+            record['date'] = start
             record['tweet count'] = numtweets
             data.append(record)
 
@@ -155,6 +161,9 @@ def website():
     #customize the website
     name = request.args['name']
     data = request.get_json(force=True)
+
+    #need to reject website if name already taken
+
     generate_website(name, data)
 
     return "made website"
@@ -172,6 +181,18 @@ def websitedownload():
 def websiteview():
     name = request.args['name']
     return render_template(name +'.html')
+
+
+@app.route('/datarobot', methods=["POST"])
+def datarobot():
+    name = request.args['name']
+    data = request.get_json(force=True)
+
+    #need to reject model if name already taken
+
+    generate_model(name, data)
+
+    return "model made"
 
 
 #need to add all of our api resources here (note the website one is a flask route as it needs the send_file function):

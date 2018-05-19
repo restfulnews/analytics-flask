@@ -4,3 +4,65 @@ http://localhost:5000/twitter?topics=plastic%20bags&company=woolworths&start_dat
 
 http://localhost:5000/websitedownload?name=test
 http://localhost:5000/websiteview?name=test
+
+
+
+
+
+
+
+'''
+news = []
+graphs = []
+models = []
+newsInfo = {
+    'title': 'Trump',
+    'tags' : 'tags go here',
+    'snippet' : 'snippet here',
+    'date' : 'date here'
+}
+news.append(newsInfo)
+
+context = {
+'title': 'Trump and aircraft',
+'description': 'DESCRIPTION GOES HERE WOOHOOO',
+'news' : news,
+'email' : 'dummy@email.com',
+'pn' : '04imahooker'
+}
+if news is not []:
+    context['news'] = news
+
+if graphs is not []:
+    context['graphs'] = graphs
+
+if models is not []:
+    context['models'] = models
+'''
+POST REQUEST
+/website
+body : json
+body contains:
+{
+    'title':
+    'description':
+    'colour':
+    'news': [
+
+
+    ]
+    'graphs' : [
+
+    ]
+    'models' : [
+
+    ]
+    'email' :
+    'pn' : (phone number)
+}
+{
+    "title": "Trump and aircraft",
+    "description": "DESCRIPTION GOES HERE WOOHOOO",
+    "email" : "dummy@email.com",
+    "pn" : "04imahooker"
+}

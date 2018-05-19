@@ -2,6 +2,8 @@ import os
 from shutil import copytree, make_archive, rmtree
 import jinja2
 import re
+import datarobot as dr
+import pandas as pd
 
 def generate_website(name, data):
 
@@ -55,3 +57,38 @@ def customize_website(filepath, name, data):
 
     with open(templateFilepath, 'w') as f:
         f.write(result)
+
+def generate_source_data(name, path, data):
+    newData = str(data)
+    newData = re.sub("'", "\"", newData)
+    tempJson = name + "temp.json"
+
+    with open(tempJson, 'w') as f:
+        f.write(str(newData))
+    #load json into a pandas data frame
+
+
+    json = pd.read_json(tempJson)
+    #write the data to the csv file
+    json.to_csv(path, index=False)
+
+    os.remove(tempJson)
+    
+    print("generated data")
+
+
+def generate_model(name, data):
+    sourceData = 'modelData/' + name + ".csv"
+    generate_source_data(name, sourceData, data)
+    
+    api_key = "apuu5rs3mpuIbAGGbadkMOQicY5btndS"
+    dr.Client(token=api_key, endpoint='https://app.datarobot.com/api/v2')
+
+    project = dr.Project.start(project_name=name,
+                        sourcedata='test.csv',
+                        target='target')
+
+    
+    return "model"
+
+
