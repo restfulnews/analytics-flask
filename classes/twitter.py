@@ -3,6 +3,7 @@ from flask_restful import Resource, Api
 from flask import Flask, request, send_from_directory, render_template, send_file
 import requests
 import got3 as got
+import re
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
@@ -33,6 +34,8 @@ class Twitter(Resource):
             end_date = datetime.strptime(request.args['end_date'], "%Y-%m-%d").date()
         else:
             return "must have end date"
+
+        topics = topics.replace(',', ' ')
 
         data = []
 
