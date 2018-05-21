@@ -1,0 +1,13 @@
+CUSTOMER PROBLEM STATMENT
+I am : A small buisnes owner who stock comes from overseas
+I am trying to: To fill customer orders as quickly as possible
+But: The latency between order and delivery is very long
+Because: I need to order the inventory from overseas and I cant reliable forsee demand
+Which makes me feel: Out of control as i can lose potential customers due to the latency or be overstocked
+
+IDEAL STATE
+In a perfect world: I know ahead of time what orders are going to come in and have the perfect amount of stock required
+The biggest benefit to me is: I will never overstock or have to wait to fill orders
+Which makes me feel: That I could capture all my buisness and develop my reputation
+
+NEVER MISSES AN ORDER
