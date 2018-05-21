@@ -7,8 +7,12 @@ class Returns(Resource):
     def get(self):
         if 'companyid' in request.args:
             companyid = request.args['companyid']
+            companyid = companyid.split('.')[0]
         else:
             companyid = 'WOW.AX'
+
+        if 'start_date' in request.args:
+            start_date =request.args['start_date']
 
         alpha_api_key = '8ZENAOK5JN09QWB1'
         alpha_url = 'https://www.alphavantage.co/query'
