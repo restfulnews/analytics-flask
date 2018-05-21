@@ -45,6 +45,7 @@ class Twitter(Resource):
             end = (single_date + timedelta(days=1)).strftime("%Y-%m-%d")
             tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
             numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
+            print(numtweets)
             record['date'] = start
             record['tweet count'] = numtweets
             data.append(record)
