@@ -18,7 +18,7 @@ class Facebook(Resource):
             }
         resp = requests.get(url=url, params=params)
         json = resp.json()
-        final = json['Facebook Statistic Data']
+        final = json
         '''
         final = []
 

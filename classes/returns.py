@@ -12,28 +12,22 @@ class Returns(Resource):
 
         alpha_api_key = '8ZENAOK5JN09QWB1'
         alpha_url = 'https://www.alphavantage.co/query'
-        function = 'TIME_SERIES_DAILY'
+        function = 'TIME_SERIES_DAILY_ADJUSTED'
         symbol = companyid
 
         params = {"function": function, "symbol": symbol, "apikey": alpha_api_key}
         resp = requests.get(url=alpha_url, params=params)
         data = resp.json()['Time Series (Daily)']
+        print(data)
 
-        prev = 0
         finalList =  []
         for key, value in data.items():
             final = dict()
             final['date'] = key
-            if prev == 0:
-                value['6. difference'] = '0'
-            else:
-                value['6. difference'] = float(value['4. close']) - float(prev)
-
-            prev = value['4. close']
-            #print(key, value)
-            final['difference'] = value['6. difference']
             final['price'] = value['4. close']
             finalList.append(final)
 
+        #sort the final list
+        finalList = sorted(finalList, key=lambda k: k['date'])
 
         return finalList
