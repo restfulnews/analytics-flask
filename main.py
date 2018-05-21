@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import re
 
-#these are functions required to do some fo the heavy lifting
+#these are functions required to do some
 from generate import generate_website, generate_model
 
 #these are our classes for the different main routes
@@ -98,4 +98,4 @@ api.add_resource(Text, '/text')
 api.add_resource(Email, '/email')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)

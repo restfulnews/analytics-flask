@@ -48,12 +48,17 @@ def customize_website(filepath, name, data):
     result = result.replace("vendor/font-awesome/css/font-awesome.min.css", "{{ url_for('static', filename='vendor/font-awesome/css/font-awesome.min.css') }}")
     result = result.replace("vendor/devicons/css/devicons.min.css", "{{ url_for('static', filename='vendor/devicons/css/devicons.min.css') }}")
     result = result.replace("vendor/simple-line-icons/css/simple-line-icons.css", "{{ url_for('static', filename='vendor/simple-line-icons/css/simple-line-icons.css') }}")
-    result = result.replace("css/resume.min.css", "{{ url_for('static', filename='css/resume.min.css') }}")
+    #result = result.replace("css/resume.min.css", "{{ url_for('static', filename='css/resume.min.css') }}")
+    #result = re.sub(r"css/resume([a-z]*)\.min\.js", r"{{ url_for('static', filename='js/resume\1.min.js') }}", result)
+    result = re.sub(r"css/resume([a-z]*)\.min\.css", r"{{ url_for('static', filename='css/resume\1.min.css') }}", result)
 
     result = result.replace("vendor/jquery/jquery.min.js", "{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}")
     result = result.replace("vendor/bootstrap/js/bootstrap.bundle.min.js", "{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}")
     result = result.replace("vendor/jquery-easing/jquery.easing.min.js", "{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js') }}")
     result = result.replace("js/resume.min.js", "{{ url_for('static', filename='js/resume.min.js') }}")
+    
+
+
 
     with open(templateFilepath, 'w') as f:
         f.write(result)
