@@ -1,9 +1,10 @@
 import Telstra_Messaging
 from Telstra_Messaging.rest import ApiException
+import requests
+from flask_restful import Resource, Api
+from flask import Flask, request, send_from_directory, render_template, send_file
 
 def generate_text(number, message):
-
-
     # create an instance of the API class
     api_instance = Telstra_Messaging.AuthenticationApi()
     client_id = "Agl2rsjQ0fbLC1xqPGDNve2Oianci7wK" # str |
@@ -37,3 +38,14 @@ def generate_text(number, message):
 
 
     return "text sent"
+
+class Text(Resource):
+    def get(self):
+        number = request.args['number']
+        text = request.args['text']
+        generate_text(number, text)
+        return "text sent"
+
+    
+
+
