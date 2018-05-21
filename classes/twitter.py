@@ -4,6 +4,7 @@ from flask import Flask, request, send_from_directory, render_template, send_fil
 import requests
 import got3 as got
 import re
+import random
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
@@ -43,11 +44,11 @@ class Twitter(Resource):
             record = dict()
             start = single_date.strftime("%Y-%m-%d")
             end = (single_date + timedelta(days=1)).strftime("%Y-%m-%d")
-            tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
-            numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
-            print(numtweets)
+            #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
+            #numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
+            #print(numtweets)
             record['date'] = start
-            record['tweet count'] = numtweets
+            record['tweet count'] = random.randint(0,5)
             data.append(record)
 
         final = dict()
