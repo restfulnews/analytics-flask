@@ -124,6 +124,8 @@
               <div class="subheading mb-3">{{item.tags}}</div>
               <img src="{{item.image}}" width="200" height="200">
               <p>{{item.snippet}}</p>
+              <br/>
+              <p>{{item.notes}} </p>
             </div>
             <div class="resume-date text-md-right">
               <span class="text-primary">{{item.date}}</span>
@@ -141,6 +143,8 @@
           {% for graph in graphs %}
             <div class="resume-content mr-auto" style="margin:75px">
               <h3 class="mb-0">{{graph.name}}</h3>
+              <br/>
+              <p>{{graph.notes}}</p>
               <canvas id="{{graph.name}}" width="400" height="200"></canvas>
             </div>
           {% endfor %}
