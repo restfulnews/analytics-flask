@@ -5,4 +5,5 @@ requests
 datetime
 datarobot
 pandas
+bs4
 git+https://github.com/Telstra/MessagingAPI-SDK-python.git

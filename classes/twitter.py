@@ -5,6 +5,8 @@ import requests
 import got3 as got
 import re
 import random
+from bs4 import BeautifulSoup
+
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
@@ -47,11 +49,33 @@ class Twitter(Resource):
             #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(topics+ " " + company).setSince(start).setUntil(end).setMaxTweets(5)
             #numtweets = len(got.manager.TweetManager.getTweets(tweetCriteria))
             #print(numtweets)
+            numtweets = get_num_tweets(start, end, (topics + " " + company))
             record['date'] = start
-            record['tweet count'] = random.randint(0,5)
+            record['tweet count'] = numtweets
             data.append(record)
 
         final = dict()
         final['data'] = data
 
         return final
+
+
+def get_num_tweets(since, until, terms):
+    url = "https://twitter.com/search?q= since:"+since+" until:"+until+" "+terms+"&src=typd"
+
+    headers = requests.utils.default_headers()
+    headers.update({
+        'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
+    })
+
+    reddit1Link = requests.get(url, headers=headers)
+    reddit1Content = BeautifulSoup(reddit1Link.content,"lxml")
+    myspan = reddit1Content.findAll("span", {"class": "ProfileTweet-actionCountForAria"})
+
+    count = 0
+    for span in myspan:
+        if re.search("replies", str(span)):
+            count += 1
+            
+
+    return count
