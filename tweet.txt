@@ -1,0 +1,5 @@
+[
+{"date": "2018-05-21", "tweet count": 3},
+{"date": "2018-05-22", "tweet count": 3},
+{"date": "2018-05-23", "tweet count": 5}
+]

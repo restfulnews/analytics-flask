@@ -6,6 +6,14 @@ from flask_restful import Resource, Api
 import os
 import pandas as pd
 import re
+from pymongo import MongoClient # Database connector
+#from bson.objectid import ObjectId # For ObjectId to work
+import bcrypt
+from datetime import date, datetime, timedelta
+import json
+import requests
+import time
+from datarobot_data import build_model_data
 
 #these are functions required to do some
 from generate import generate_website, generate_model
@@ -13,28 +21,61 @@ from generate import generate_website, generate_model
 #these are our classes for the different main routes
 from classes.news import News
 from classes.returns import Returns
-from classes.twitter import Twitter
+from classes.twitter import Twitter, get_num_tweets, daterange
 from classes.facebook import Facebook
 from classes.text import Text
 from classes.email import Email
 
-alpha_api_key = '8ZENAOK5JN09QWB1'
-alpha_url = 'https://www.alphavantage.co/query'
+#connect to the database
+client = MongoClient('localhost', 27017)    #Configure the connection to the database
+db = client.restfulnews    #Select the database
+users = db.users #Select the collection
+
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
+
+@app.route('/userdetails')
+def userdetails():
+    user = request.args['user']
+
+    filter_ = {
+        'name': user,
+    }
+
+    userDB = users.find_one(filter_)
+
+    if userDB == None:
+        return "no user"
+    else:
+        return str(userDB)
+
+
 @app.route('/website', methods=["POST"])
 def website():
     #customize the website
     name = request.args['name']
+    user = request.args['user']
     data = request.get_json(force=True)
 
     #need to reject website if name already taken
 
     generate_website(name, data)
+
+    #need to add the website to the associated user
+    filter_ = {
+        'name': user,
+    }
+    update =  {
+        '$push': {
+            'websites': name
+        }
+    }
+    users.update_one(filter_, update, upsert=True)
+
 
     return "made website"
 
@@ -61,16 +102,33 @@ def websiteview():
     else:
         return "the website does not exist"
 
-@app.route('/datarobot', methods=["POST"])
+#localhost:5000/datarobot?name=hello&companyid=wow&companyname=woolworths&topics=plastic bags
+@app.route('/datarobot')
 def datarobot():
     name = request.args['name']
-    data = request.get_json(force=True)
+    topics = request.args['topics']
+    companyid = request.args['companyid']
+    companyname = request.args['companyname']
 
-    #need to reject model if name already taken
+    data = build_model_data(name, topics, companyid, companyname)
+    projectid = generate_model(name, 'data/hello.csv')
+    
+    filter_ = {
+        'name': user,
+    }
+    update =  {
+        '$push': {
+            'projects': projectid
+        }
+    }
+    users.update_one(filter_, update, upsert=True)
+    
+    return "models started"
 
-    generate_model(name, data)
+@app.route('/models'):
+def models():
+    return "hello"
 
-    return "model made"
 
 @app.route('/correlation', methods=["POST"])
 def correlation():
@@ -98,4 +156,17 @@ api.add_resource(Text, '/text')
 api.add_resource(Email, '/email')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=80)
+    app.run(debug=True, port=5000)
+
+
+'''
+filter_ = {
+    'name': user,
+}
+update =  {
+    '$push': {
+        'models': modelid
+    }
+}
+users.update_one(filter_, update, upsert=True)
+'''
