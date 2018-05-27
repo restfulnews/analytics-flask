@@ -34,12 +34,16 @@ users = db.users #Select the collection
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
-CORS(app)
+
 api = Api(app)
+CORS(app)
 
 
 @app.route('/userdetails')
 def userdetails():
+    #need to also do a request to the node backend so we get the right stuff
+
+
     user = request.args['user']
 
     filter_ = {
@@ -114,7 +118,7 @@ def datarobot():
     projectid = generate_model(name, 'data/hello.csv')
     
     filter_ = {
-        'name': user,
+        'name': name,
     }
     update =  {
         '$push': {
@@ -125,9 +129,11 @@ def datarobot():
     
     return "models started"
 
-@app.route('/models'):
+@app.route('/models')
 def models():
     return "hello"
+
+
 
 
 @app.route('/correlation', methods=["POST"])
@@ -157,16 +163,3 @@ api.add_resource(Email, '/email')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
-
-'''
-filter_ = {
-    'name': user,
-}
-update =  {
-    '$push': {
-        'models': modelid
-    }
-}
-users.update_one(filter_, update, upsert=True)
-'''
