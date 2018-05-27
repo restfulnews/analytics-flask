@@ -7,6 +7,6 @@ datarobot
 pandas
 bs4
 pymongo>=3.6.1
-bson
+bson>=0.5.6
 bcrypt
 git+https://github.com/Telstra/MessagingAPI-SDK-python.git
