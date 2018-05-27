@@ -149,11 +149,14 @@
                       <div class="mdl-card__media" style="background-color:rgba(255,255,255,0);justify-content: center;">
                         <img src="{{item.image}}" border="0" alt="" style="display:block;margin-left:auto;margin-right:auto;height:15rem">
                       </div>
-                      <div class="mdl-card__supporting-text" align="center" style="height:13rem;overflow: hidden;">
-                          {{item.date}}
+                      <div class="mdl-card__subtitle-text"
+                           style="text-align:left;align:left;vertical-align:top;postion:absolute;margin-top:0.6rem; margin-left:0.8rem;font-size:0.9rem"
+                      >
+                        {{item.date}}
+                      </div>
+                      <div class="mdl-card__supporting-text" align="center" style="height:13rem;width:100%;overflow: hidden;">
                           {{item.snippet}}
-                          <br/>
-                          <p>{{item.notes}} </p>
+                          <p>{{item.notes}}</p>
                       </div>
                       <div class="mdl-card__actions">
                          <a href="{{item.link}}" style="font-size:0.8rem">Click to see the full article</a>
