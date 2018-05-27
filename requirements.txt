@@ -10,3 +10,4 @@ pymongo>=3.6.1
 bson
 bcrypt
 git+https://github.com/Telstra/MessagingAPI-SDK-python.git
+pyquery

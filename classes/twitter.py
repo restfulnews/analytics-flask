@@ -56,7 +56,6 @@ class Twitter(Resource):
 
         return final
 
-
 def get_num_tweets(since, until, terms):
     url = "https://twitter.com/search?q= since:"+since+" until:"+until+" "+terms+"&src=typd"
 
@@ -73,6 +72,6 @@ def get_num_tweets(since, until, terms):
     for span in myspan:
         if re.search("replies", str(span)):
             count += 1
-            
+
 
     return count

@@ -123,11 +123,11 @@
         <div class="my-auto">
           <h2 class="mb-5">Graphs</h2>
           {% for graph in graphs %}
-            <div class="resume-content mr-auto" style="margin:75px">
+            <div class="resume-content mr-auto" align="left">
               <h3 class="mb-0">{{graph.name}}</h3>
               <br/>
               <p>{{graph.notes}}</p>
-              <canvas id="{{graph.name}}" width="400" height="200"></canvas>
+              <canvas id="{{graph.name}}" width="16rem" height="12rem"></canvas>
             </div>
           {% endfor %}
         </div>
@@ -141,22 +141,22 @@
           <div class="mdl-grid">
           {% for item in news %}
           <div class="mdl-cell mdl-cell--4-col">
-              <div class="resume-item d-flex flex-column flex-md-row mb-5">
-                  <div class="mdl-card mdl-shadow--4dp">
-                      <div class="mdl-card__title">
-                         <h2 class="mdl-card__title-text">{{item.title}}</h2>
+              <div class="resume-item d-flex flex-column flex-md-row">
+                  <div class="mdl-card mdl-shadow--2dp" style="width:95%;">
+                      <div class="mdl-card__title" style="height:10rem;text-align: center;">
+                         <h2 class="mdl-card__title-text" align="center" style="overflow: hidden;text-align: center;max-height:8rem">{{item.title}}</h2>
                       </div>
-                      <div class="mdl-card__media">
-                        <img src="{{item.image}}" border="0" alt="">
+                      <div class="mdl-card__media" style="background-color:rgba(255,255,255,0);justify-content: center;">
+                        <img src="{{item.image}}" border="0" alt="" style="display:block;margin-left:auto;margin-right:auto;height:15rem">
                       </div>
-                      <div class="mdl-card__supporting-text">
+                      <div class="mdl-card__supporting-text" align="center" style="height:13rem;overflow: hidden;">
                           {{item.date}}
                           {{item.snippet}}
                           <br/>
                           <p>{{item.notes}} </p>
                       </div>
                       <div class="mdl-card__actions">
-                         <a href="{{item.link}}">Article</a>
+                         <a href="{{item.link}}" style="font-size:0.8rem">Click to see the full article</a>
                       </div>
                     </div>
               </div>
@@ -198,7 +198,7 @@
           <p>Email: {{email}}</p>
           <p>Phone number: {{pn}}</p>
         <div>
-              
+
       </section>
 
 

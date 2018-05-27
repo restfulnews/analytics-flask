@@ -56,9 +56,10 @@ def userdetails():
 
 @app.route('/website', methods=["POST"])
 def website():
+    print (request)
     #customize the website
     name = request.args['name']
-    user = request.args['user']
+    #user = request.args['user']
     data = request.get_json(force=True)
 
     #need to reject website if name already taken
@@ -67,7 +68,7 @@ def website():
 
     #need to add the website to the associated user
     filter_ = {
-        'name': user,
+        'name': 'user', #change this when user is sent in post request
     }
     update =  {
         '$push': {
@@ -112,7 +113,7 @@ def datarobot():
 
     data = build_model_data(name, topics, companyid, companyname)
     projectid = generate_model(name, 'data/hello.csv')
-    
+
     filter_ = {
         'name': user,
     }
@@ -122,10 +123,10 @@ def datarobot():
         }
     }
     users.update_one(filter_, update, upsert=True)
-    
+
     return "models started"
 
-@app.route('/models'):
+@app.route('/models')
 def models():
     return "hello"
 
