@@ -34,12 +34,39 @@ users = db.users #Select the collection
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
-CORS(app)
+
 api = Api(app)
+CORS(app)
+
+'''
+either: NO USER
+
+OR:
+{
+
+    websites: [
+        {'endpoint' : "localhost/websiteview?alskdnalksnd",
+         'name' : "first" }
+
+        ],
+    models: [
+        {'endpoint' : "localhost/model?alskdnalksnd",
+         'name' : "first" }
+
+
+    ]
+
+}
+
+
+
+'''
+
 
 
 @app.route('/userdetails')
 def userdetails():
+    #need to also do a request to the node backend so we get the right stuff
     user = request.args['user']
 
     filter_ = {
@@ -47,6 +74,10 @@ def userdetails():
     }
 
     userDB = users.find_one(filter_)
+
+    #print(userDB)
+    #websites = userDB['websites']
+    #payload = {'websites' : websites, 'models' : websites}
 
     if userDB == None:
         return "no user"
@@ -61,9 +92,6 @@ def website():
     name = request.args['name']
     #user = request.args['user']
     data = request.get_json(force=True)
-
-    #need to reject website if name already taken
-
     generate_website(name, data)
 
     #need to add the website to the associated user
@@ -72,11 +100,10 @@ def website():
     }
     update =  {
         '$push': {
-            'websites': name
+            'websites': {'name' : name, 'route' : '/websiteview?name=' + name}
         }
     }
     users.update_one(filter_, update, upsert=True)
-
 
     return "made website"
 
@@ -106,6 +133,7 @@ def websiteview():
 #localhost:5000/datarobot?name=hello&companyid=wow&companyname=woolworths&topics=plastic bags
 @app.route('/datarobot')
 def datarobot():
+    user = request.args['user']
     name = request.args['name']
     topics = request.args['topics']
     companyid = request.args['companyid']
@@ -115,11 +143,11 @@ def datarobot():
     projectid = generate_model(name, 'data/hello.csv')
 
     filter_ = {
-        'name': user,
+        'name': name,
     }
     update =  {
         '$push': {
-            'projects': projectid
+            'projects': {"projectid" : projectid, 'name' : name }
         }
     }
     users.update_one(filter_, update, upsert=True)
@@ -129,6 +157,8 @@ def datarobot():
 @app.route('/models')
 def models():
     return "hello"
+
+
 
 
 @app.route('/correlation', methods=["POST"])
@@ -158,16 +188,3 @@ api.add_resource(Email, '/email')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
-
-'''
-filter_ = {
-    'name': user,
-}
-update =  {
-    '$push': {
-        'models': modelid
-    }
-}
-users.update_one(filter_, update, upsert=True)
-'''
