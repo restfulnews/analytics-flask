@@ -14,6 +14,8 @@ import json
 import requests
 import time
 from datarobot_data import build_model_data
+from textblob import Blobber
+from textblob.sentiments import NaiveBayesAnalyzer
 
 #these are functions required to do some
 from generate import generate_website, generate_model
@@ -31,6 +33,8 @@ client = MongoClient('localhost', 27017)    #Configure the connection to the dat
 db = client.restfulnews    #Select the database
 users = db.users #Select the collection
 
+#pre-train sentiment analyser
+tb = Blobber(analyzer=NaiveBayesAnalyzer())
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
@@ -87,16 +91,15 @@ def userdetails():
 
 @app.route('/website', methods=["POST"])
 def website():
-    print (request)
     #customize the website
     name = request.args['name']
     #user = request.args['user']
     data = request.get_json(force=True)
-    generate_website(name, data)
+    generate_website(name, data, tb)
 
     #need to add the website to the associated user
     filter_ = {
-        'name': 'user', #change this when user is sent in post request
+        'name': name
     }
     update =  {
         '$push': {
