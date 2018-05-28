@@ -86,7 +86,7 @@ def website():
     }
     update =  {
         '$push': {
-            'websites': {'name' : name, 'route' : 'http://analytics.api.restfulnew.com/websiteview?name=' + name}
+            'websites': {'name' : name, 'route' : 'http://analytics.api.restfulnews.com/websiteview?name=' + name}
         }
     }
     users.update_one(filter_, update, upsert=True)
