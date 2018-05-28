@@ -76,13 +76,13 @@ def userdetails():
 def website():
     #customize the website
     name = request.args['name']
-    #user = request.args['user']
+    user = request.args['user']
     data = request.get_json(force=True)
     generate_website(name, data, tb)
 
     #need to add the website to the associated user
     filter_ = {
-        'name': name
+        'name': user
     }
     update =  {
         '$push': {
