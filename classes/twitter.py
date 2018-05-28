@@ -2,21 +2,24 @@ from datetime import date, datetime, timedelta
 from flask_restful import Resource, Api
 from flask import Flask, request, send_from_directory, render_template, send_file
 import requests
-import got3 as got
 import re
 import random
 from bs4 import BeautifulSoup
+from pymongo import MongoClient
 
 
 def daterange(start_date, end_date):
     for n in range(int ((end_date - start_date).days)):
         yield start_date + timedelta(n)
 
-
-
 #http://localhost:5000/twitter?topics=plastic%20bags&company=woolworths&start_date=2018-02-07&end_date=2018-02-15
 class Twitter(Resource):
     def get(self):
+        client = MongoClient('localhost', 27017)
+        db = client.restfulnews
+        tweetdb = db.tweets
+
+
         if 'topics' in request.args:
             topics = request.args['topics']
         else:
@@ -46,7 +49,27 @@ class Twitter(Resource):
             record = dict()
             start = single_date.strftime("%Y-%m-%d")
             end = (single_date + timedelta(days=1)).strftime("%Y-%m-%d")
-            numtweets = get_num_tweets(start, end, (topics + " " + company))
+
+            filter_ = {
+                'start': start,
+                'company': company,
+                'topics' : topics
+            }
+            tweets = tweetdb.find_one(filter_)
+            print(tweets)
+
+            if tweets == None:
+                numtweets = get_num_tweets(start, end, (topics + " " + company))
+                newtweet = {
+                    'start': start,
+                    'company' : company, 
+                    'topics' : topics,
+                    'numtweets' : numtweets
+                }
+                tweetdb.insert_one(newtweet)
+            else:
+                numtweets = tweets['numtweets']
+            
             record['date'] = start
             record['tweet count'] = numtweets
             data.append(record)

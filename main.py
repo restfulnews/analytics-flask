@@ -13,7 +13,8 @@ from datetime import date, datetime, timedelta
 import json
 import requests
 import time
-from datarobot_data import build_model_data
+from datarobot_data import build_model_data, get_models_from_project
+import datarobot as dr
 
 #these are functions required to do some
 from generate import generate_website, generate_model
@@ -27,62 +28,44 @@ from classes.text import Text
 from classes.email import Email
 
 #connect to the database
-client = MongoClient('localhost', 27017)    #Configure the connection to the database
-db = client.restfulnews    #Select the database
-users = db.users #Select the collection
+client = MongoClient('localhost', 27017)
+db = client.restfulnews
+users = db.users
 
+#setup datarobot things
+api_key = "apuu5rs3mpuIbAGGbadkMOQicY5btndS"
+dr.Client(token=api_key, endpoint='https://app.datarobot.com/api/v2')
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
-
 api = Api(app)
 CORS(app)
 
-'''
-either: NO USER
-
-OR:
-{
-
-    websites: [
-        {'endpoint' : "localhost/websiteview?alskdnalksnd",
-         'name' : "first" }
-        
-        ],
-    models: [
-        {'endpoint' : "localhost/model?alskdnalksnd",
-         'name' : "first" }
-    
-    
-    ]
-
-}
-
-
-
-'''
-
-
-
 @app.route('/userdetails')
 def userdetails():
-    #need to also do a request to the node backend so we get the right stuff
     user = request.args['user']
-
     filter_ = {
         'name': user,
     }
-
     userDB = users.find_one(filter_)
 
-    #print(userDB)
-    #websites = userDB['websites']
-    #payload = {'websites' : websites, 'models' : websites}
-
     if userDB == None:
+        print("no user")
         return "no user"
     else:
-        return str(userDB)
+        if "projects" not in userDB:
+            userDB['projects'] = []
+        else:
+            for project in userDB['projects']:
+                models = get_models_from_project(project['projectid'])
+                project['models'] = models
+
+        if "websites" not in userDB:
+            userDB['websites'] = []
+
+        userDB = {"websites" : userDB['websites'], "projects" : userDB['projects']}
+
+        return json.dumps(userDB)
 
 
 @app.route('/website', methods=["POST"])
@@ -99,7 +82,7 @@ def website():
     }
     update =  {
         '$push': {
-            'websites': {'name' : name, 'route' : '/websiteview?name=' + name}
+            'websites': {'name' : name, 'route' : 'http://analytics.api.restfulnew.com/websiteview?name=' + name}
         }
     }
     users.update_one(filter_, update, upsert=True)
@@ -139,26 +122,54 @@ def datarobot():
     companyname = request.args['companyname']
 
     data = build_model_data(name, topics, companyid, companyname)
-    projectid = generate_model(name, 'data/hello.csv')
-    
+    #projectid = generate_model(name, 'data/hello.csv')
+    projectid = generate_model(name, data)
     filter_ = {
-        'name': name,
+        'name': user,
     }
     update =  {
         '$push': {
-            'projects': {"projectid" : projectid, 'name' : name }
+            'projects': {"projectid" : projectid, 'name' : name, 'companyname' : companyname, 'topics' : topics }
         }
     }
     users.update_one(filter_, update, upsert=True)
     
     return "models started"
 
-@app.route('/models')
-def models():
-    return "hello"
+@app.route('/predict', methods=['POST'])
+def deploy():
+    modelid = request.args['modelid']
+    projectid = request.args['projectid']
+    data = request.get_json(force=True)
+   
+    with open('data_to_predict.csv', 'w') as f:
+        i = 0
+        for key, value in (data).items():
+            if i == 0:
+                f.write(key)
+            else:
+                f.write("," + key)
+            i += 1
+        i = 0
+        f.write("\n")
+        for key, value in (data).items():
+            if i == 0:
+                f.write(str(value))
+            else:
+                f.write("," + str(value))
+            i += 1
 
+    project = dr.Project.get(projectid)
+    model = dr.Model.get(project=projectid,
+                        model_id=modelid)
 
+    dataset_from_path = project.upload_dataset('data_to_predict.csv')
+    predict_job = model.request_predictions(dataset_from_path.id)
+    print("predict job started")
+    predictions = predict_job.get_result_when_complete()
+    prediction = (predictions['prediction'].iloc[0])
 
+    return json.dumps({'prediction' : prediction})
 
 @app.route('/correlation', methods=["POST"])
 def correlation():

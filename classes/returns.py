@@ -6,6 +6,7 @@ from datetime import date, datetime, timedelta
 
 class Returns(Resource):
     def get(self):
+
         if 'companyid' in request.args:
             companyid = request.args['companyid']
             companyid = companyid.split('.')[0]
