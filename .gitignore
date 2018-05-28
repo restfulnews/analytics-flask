@@ -1,3 +1,5 @@
 templates/*.html
 modelData/
 *.zip
+*.pyc
+__pycache__

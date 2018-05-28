@@ -15,6 +15,8 @@ import requests
 import time
 from datarobot_data import build_model_data, get_models_from_project
 import datarobot as dr
+from textblob import Blobber
+from textblob.sentiments import NaiveBayesAnalyzer
 
 #these are functions required to do some
 from generate import generate_website, generate_model
@@ -35,6 +37,8 @@ users = db.users
 #setup datarobot things
 api_key = "apuu5rs3mpuIbAGGbadkMOQicY5btndS"
 dr.Client(token=api_key, endpoint='https://app.datarobot.com/api/v2')
+#pre-train sentiment analyser
+tb = Blobber(analyzer=NaiveBayesAnalyzer())
 
 #create the flask app and enable it to be an api
 app = Flask(__name__)
@@ -72,13 +76,13 @@ def userdetails():
 def website():
     #customize the website
     name = request.args['name']
-    user = request.args['user']
+    #user = request.args['user']
     data = request.get_json(force=True)
-    generate_website(name, data)
+    generate_website(name, data, tb)
 
     #need to add the website to the associated user
     filter_ = {
-        'name': user,
+        'name': name
     }
     update =  {
         '$push': {
@@ -133,7 +137,7 @@ def datarobot():
         }
     }
     users.update_one(filter_, update, upsert=True)
-    
+
     return "models started"
 
 @app.route('/predict', methods=['POST'])
